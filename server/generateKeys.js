@@ -5,6 +5,7 @@ const { keccak256 } = require("ethereum-cryptography/keccak");
 
 const privateKey = toHex(secp256k1.utils.randomPrivateKey());
 const publicKey = toHex(secp256k1.getPublicKey(privateKey));
+console.log("compare:", privateKey.length, publicKey.length);
 
 const privateKey_2 = toHex(secp256k1.utils.randomPrivateKey());
 const publicKey_2 = toHex(secp256k1.getPublicKey(privateKey_2));
@@ -14,7 +15,10 @@ console.log("Private Key:", privateKey);
 console.log("Public Key:", publicKey);
 console.log("Private Key 2:", privateKey_2);
 console.log("Public Key 2:", publicKey_2);
-
+console.log(
+    "length",
+    "69d1cdb1045a8d7431062c9921c9ba2d88755d1a82291c67b215b1e6931226d0".length
+);
 // Client
 // const msg = {
 //     sender: privateKey,

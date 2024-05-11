@@ -5,7 +5,7 @@ import { secp256k1 } from "ethereum-cryptography/secp256k1.js";
 import { toHex, utf8ToBytes } from "ethereum-cryptography/utils";
 import hashMessage from "./hashMessage";
 
-function Transfer({ privateKey, setBalance }) {
+function Transfer({ address, setBalance, privateKey }) {
     const [sendAmount, setSendAmount] = useState("");
     const [recipient, setRecipient] = useState("");
 
@@ -16,11 +16,12 @@ function Transfer({ privateKey, setBalance }) {
 
         try {
             const msg = {
-                sender: privateKey,
+                sender: address,
                 amount: parseInt(sendAmount),
                 recipient,
             };
             const msgHash = hashMessage(msg);
+            console.log(privateKey);
             const signature = secp256k1.sign(msgHash, privateKey);
             const {
                 data: { balance },
@@ -32,8 +33,8 @@ function Transfer({ privateKey, setBalance }) {
             });
             setBalance(balance);
         } catch (ex) {
-            alert(ex.response.data.message);
-            // alert(ex);
+            // alert(ex.response.data.message);
+            alert(ex);
         }
     }
 

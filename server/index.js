@@ -10,7 +10,7 @@ const port = 3042;
 
 const checkValid = (signature, msgHash, sender, msg) => {
     const isSigned = secp256k1.verify(signature, msgHash, sender);
-    const isValidSender = sender === toHex(secp256k1.getPublicKey(msg.sender));
+    const isValidSender = sender === msg.sender;
     return isSigned && isValidSender;
 };
 app.use(cors());
@@ -22,17 +22,15 @@ const balances = {
     "020f012e35479ff15054b9fa3a01977ca3b2644fef862386301ee3708b8150ea1f": 75, // priv: bf2fe914bab702869df334d189cc2a9e12c5114b5a95b49c37c2830376fa1471
 };
 
-app.get("/balance/:privateKey", (req, res) => {
-    const { privateKey } = req.params;
-    const publicKey = toHex(secp256k1.getPublicKey(privateKey));
-    const balance = balances[publicKey] || 0;
+app.get("/balance/:address", (req, res) => {
+    const { address } = req.params;
+    const balance = balances[address] || 0;
     res.send({ balance });
 });
 
 app.post("/send", (req, res) => {
     const { msg, r, s, recovery } = req.body;
     const signature = new secp256k1.Signature(BigInt(r), BigInt(s), recovery);
-    // 1. Verify signature by recovering public key
     const msgHash = hashMessage(msg);
     const sender = toHex(signature.recoverPublicKey(msgHash).toRawBytes());
     const recipient = msg.recipient;
@@ -42,8 +40,6 @@ app.post("/send", (req, res) => {
     if (!isValid) {
         res.status(400).send({ message: "Invalid transaction" });
     }
-    // const isSigned = secp256k1.verify(reconstructedSig, msgHash, sender);
-    // console.log(isSigned);
     setInitialBalance(sender);
     setInitialBalance(recipient);
 
